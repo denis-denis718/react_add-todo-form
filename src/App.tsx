@@ -4,31 +4,18 @@ import usersFromServer from './api/users';
 import todosFromServer from './api/todos';
 import { useState, useMemo } from 'react';
 import { TodoList } from './components/TodoList';
+import type { Todo } from './types';  // ← ДОБАВИТЬ ЭТУ СТРОКУ
 
 
-type User = {
-  id: number;
-  name: string;
-  username: string;
-  email: string;
-}
-
-type Todo = {
-  id: number;
-  title: string;
-  completed: boolean;
-  userId: number;
-  user: User;
-}
 
 export const App = () => {
   const [users] = useState(usersFromServer);
-  
+
   // Подготавливаем данные: объединяем todos с users
   const preparedTodos = useMemo(() => {
-    return todosFromServer.map((todo) => {
-      const user = users.find((u) => u.id === todo.userId);
-      
+    return todosFromServer.map(todo => {
+      const user = users.find(u => u.id === todo.userId);
+
       if (!user) {
         throw new Error(`User with id ${todo.userId} not found`);
       }
@@ -41,11 +28,11 @@ export const App = () => {
   }, [users]);
 
   const [todos, setTodos] = useState<Todo[]>(preparedTodos);
-  
+
   // Состояние формы
   const [title, setTitle] = useState('');
   const [selectedUserId, setSelectedUserId] = useState(0);
-  
+
   // Состояние ошибок валидации
   const [titleError, setTitleError] = useState('');
   const [userError, setUserError] = useState('');
@@ -53,12 +40,12 @@ export const App = () => {
   // Обработчик изменения поля title
   const handleTitleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value;
-    
+
     // Опционально: фильтрация ввода (только буквы, цифры, пробелы)
-    const filteredValue = value.replace(`/[^\p{L}\p{N}\s]/gu`, '');
-    
+    const filteredValue = value.replace(/[^\p{L}\p{N}\s]/gu, '');
+
     setTitle(filteredValue);
-    
+
     // Очищаем ошибку при изменении
     if (titleError) {
       setTitleError('');
@@ -68,8 +55,9 @@ export const App = () => {
   // Обработчик изменения выбора пользователя
   const handleUserChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const value = Number(event.target.value);
+
     setSelectedUserId(value);
-    
+
     // Очищаем ошибку при изменении
     if (userError) {
       setUserError('');
@@ -99,15 +87,15 @@ export const App = () => {
     }
 
     // Находим максимальный id в массиве todos
-    const maxId = todos.length > 0 
-      ? Math.max(...todos.map((todo) => todo.id))
-      : 0;
+    const maxId =
+      todos.length > 0 ? Math.max(...todos.map(todo => todo.id)) : 0;
 
     // Находим выбранного пользователя
-    const selectedUser = users.find((u) => u.id === selectedUserId);
+    const selectedUser = users.find(u => u.id === selectedUserId);
 
     if (!selectedUser) {
       setUserError('Please choose a user');
+
       return;
     }
 
@@ -159,7 +147,7 @@ export const App = () => {
             <option value={0} disabled>
               Choose a user
             </option>
-            {users.map((user) => (
+            {users.map(user => (
               <option key={user.id} value={user.id}>
                 {user.name}
               </option>
