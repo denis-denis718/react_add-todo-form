@@ -1,10 +1,7 @@
+import type { User } from '../../types';
+
 type Props = {
-  user: {
-    id: number;
-    name: string;
-    username: string;
-    email: string;
-  };
+  user: User;
 };
 
 export const UserInfo = ({ user }: Props) => {

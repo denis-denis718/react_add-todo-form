@@ -4,9 +4,7 @@ import usersFromServer from './api/users';
 import todosFromServer from './api/todos';
 import { useState, useMemo } from 'react';
 import { TodoList } from './components/TodoList';
-import type { Todo } from './types';  // ← ДОБАВИТЬ ЭТУ СТРОКУ
-
-
+import type { Todo } from './types';
 
 export const App = () => {
   const [users] = useState(usersFromServer);
@@ -14,7 +12,7 @@ export const App = () => {
   // Подготавливаем данные: объединяем todos с users
   const preparedTodos = useMemo(() => {
     return todosFromServer.map(todo => {
-      const user = users.find(u => u.id === todo.userId);
+      const user = users.find(currentUser => currentUser.id === todo.userId);
 
       if (!user) {
         throw new Error(`User with id ${todo.userId} not found`);
@@ -91,7 +89,7 @@ export const App = () => {
       todos.length > 0 ? Math.max(...todos.map(todo => todo.id)) : 0;
 
     // Находим выбранного пользователя
-    const selectedUser = users.find(u => u.id === selectedUserId);
+    const selectedUser = users.find(user => user.id === selectedUserId);
 
     if (!selectedUser) {
       setUserError('Please choose a user');
